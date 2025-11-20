@@ -2,65 +2,14 @@
 import React, { useMemo } from 'react';
 import classNames from 'classnames';
 import { InlineLoading } from '@carbon/react';
-import {
-  type CoreTranslationKey,
-  getCoreTranslation,
-  ConfigurableLink,
-  usePatient,
-  parseDate,
-} from '@openmrs/esm-framework';
+import { type CoreTranslationKey, getCoreTranslation, usePatient } from '@openmrs/esm-framework';
 import { usePatientContactAttributes, usePatientAttributes } from './usePatientAttributes';
-import { usePatientListsForPatient } from './usePatientListsForPatient';
-import { useRelationships } from './useRelationships';
 import styles from './patient-banner-details.scss';
 
 interface ContactDetailsProps {
   patientId: string;
   deceased: boolean;
 }
-
-const PatientLists: React.FC<{ patientUuid: string }> = ({ patientUuid }) => {
-  const { cohorts = [], isLoading } = usePatientListsForPatient(patientUuid);
-
-  return (
-    <>
-      <p className={styles.heading}>
-        {getCoreTranslation('patientLists', 'Patient Lists')} ({cohorts?.length ?? 0})
-      </p>
-      {isLoading ? (
-        <InlineLoading description={`${getCoreTranslation('loading', 'Loading')} ...`} role="progressbar" />
-      ) : (
-        <ul>
-          {(() => {
-            if (cohorts?.length > 0) {
-              const sortedLists = cohorts.sort(
-                (a, b) => parseDate(a?.startDate).getTime() - parseDate(b?.startDate).getTime(),
-              );
-              const slicedLists = sortedLists.slice(0, 3);
-              return slicedLists?.map((cohort) => (
-                <li key={cohort.uuid}>
-                  <ConfigurableLink to={`${window.spaBase}/home/patient-lists/${cohort.uuid}`} key={cohort.uuid}>
-                    {cohort.name}
-                  </ConfigurableLink>
-                </li>
-              ));
-            }
-            return <li>--</li>;
-          })()}
-          {cohorts.length > 3 && (
-            <li className={styles.link}>
-              <ConfigurableLink to={`${window.spaBase}/home/patient-lists`}>
-                {getCoreTranslation('seeMoreLists', 'See {{count}} more lists', {
-                  count: cohorts?.length - 3,
-                })}
-              </ConfigurableLink>
-            </li>
-          )}
-        </ul>
-      )}
-    </>
-  );
-};
 
 const Address: React.FC<{ patientId: string }> = ({ patientId }) => {
   const { patient, isLoading } = usePatient(patientId);
@@ -137,43 +86,6 @@ const Contact: React.FC<{ patientUuid: string; deceased?: boolean }> = ({ patien
                 {label}: {value}
               </li>
             ))
-          ) : (
-            <li>--</li>
-          )}
-        </ul>
-      )}
-    </>
-  );
-};
-
-const Relationships: React.FC<{ patientId: string }> = ({ patientId }) => {
-  const { data: relationships, isLoading } = useRelationships(patientId);
-
-  return (
-    <>
-      <p className={styles.heading}>{getCoreTranslation('relationships', 'Relationships')}</p>
-      {isLoading ? (
-        <InlineLoading description={`${getCoreTranslation('loading', 'Loading')} ...`} role="progressbar" />
-      ) : (
-        <ul>
-          {relationships && relationships.length > 0 ? (
-            <>
-              {relationships.map((r) => (
-                <li key={r.uuid} className={styles.relationship}>
-                  <div>
-                    <ConfigurableLink to={`${window.spaBase}/patient/${r.relativeUuid}/chart`}>
-                      {r.display}
-                    </ConfigurableLink>
-                  </div>
-                  <div>{r.relationshipType}</div>
-                  <div>
-                    {`${r.relativeAge ? r.relativeAge : '--'} ${
-                      r.relativeAge ? (r.relativeAge === 1 ? 'yr' : 'yrs') : ''
-                    }`}
-                  </div>
-                </li>
-              ))}
-            </>
           ) : (
             <li>--</li>
           )}
@@ -272,16 +184,13 @@ export default function PatientBannerContactDetails({ patientId, deceased }: Con
       </div>
       <div className={styles.row}>
         <div className={styles.col}>
-          <Relationships patientId={patientId} />
-        </div>
-        <div className={styles.col}>
           <AccompanyingContact patientUuid={patientId} />
         </div>
-      </div>
-      <div className={styles.row}>
         <div className={styles.col}>
           <TrustedContact patientUuid={patientId} />
         </div>
+      </div>
+      <div className={styles.row}>
         <div className={styles.col}>
           <EmergencyContact patientUuid={patientId} />
         </div>
