@@ -27,7 +27,7 @@ const Address: React.FC<{ patientId: string }> = ({ patientId }) => {
 
     if (address.state) {
       parts.push({
-        label: getCoreTranslation('state' as CoreTranslationKey, 'state'),
+        label: getCoreTranslation('state' as CoreTranslationKey, 'State'),
         value: address.state,
       });
     }
@@ -35,17 +35,14 @@ const Address: React.FC<{ patientId: string }> = ({ patientId }) => {
     const address1 = address.extension?.[0]?.extension?.find((add) => getAddressKey(add.url) === 'address1');
     if (address1?.valueString) {
       parts.push({
-        label: getCoreTranslation(
-          getAddressKey(address1.url) as CoreTranslationKey,
-          getAddressKey(address1.url) as CoreTranslationKey,
-        ),
+        label: getCoreTranslation(getAddressKey(address1.url) as CoreTranslationKey, 'Region'),
         value: address1.valueString,
       });
     }
 
     if (address.district) {
       parts.push({
-        label: getCoreTranslation('district' as CoreTranslationKey, 'district'),
+        label: getCoreTranslation('district' as CoreTranslationKey, 'District'),
         value: address.district,
       });
     }
@@ -53,10 +50,7 @@ const Address: React.FC<{ patientId: string }> = ({ patientId }) => {
     const address2 = address.extension?.[0]?.extension?.find((add) => getAddressKey(add.url) === 'address2');
     if (address2?.valueString) {
       parts.push({
-        label: getCoreTranslation(
-          getAddressKey(address2.url) as CoreTranslationKey,
-          getAddressKey(address2.url) as CoreTranslationKey,
-        ),
+        label: getCoreTranslation(getAddressKey(address2.url) as CoreTranslationKey, 'Township'),
         value: address2.valueString,
       });
     }
@@ -64,10 +58,7 @@ const Address: React.FC<{ patientId: string }> = ({ patientId }) => {
     const address3 = address.extension?.[0]?.extension?.find((add) => getAddressKey(add.url) === 'address3');
     if (address3?.valueString) {
       parts.push({
-        label: getCoreTranslation(
-          getAddressKey(address3.url) as CoreTranslationKey,
-          getAddressKey(address3.url) as CoreTranslationKey,
-        ),
+        label: getCoreTranslation(getAddressKey(address3.url) as CoreTranslationKey, 'Fokontany'),
         value: address3.valueString,
       });
     }
