@@ -20,30 +20,64 @@ const Address: React.FC<{ patientId: string }> = ({ patientId }) => {
     return <InlineLoading description={`${getCoreTranslation('loading', 'Loading')} ...`} role="progressbar" />;
   }
 
+  const getAddressParts = () => {
+    if (!address) return [];
+
+    const parts: Array<{ label: string; value: string }> = [];
+
+    if (address.state) {
+      parts.push({
+        label: getCoreTranslation('state' as CoreTranslationKey, 'State'),
+        value: address.state,
+      });
+    }
+
+    const address1 = address.extension?.[0]?.extension?.find((add) => getAddressKey(add.url) === 'address1');
+    if (address1?.valueString) {
+      parts.push({
+        label: getCoreTranslation(getAddressKey(address1.url) as CoreTranslationKey, 'Region'),
+        value: address1.valueString,
+      });
+    }
+
+    if (address.district) {
+      parts.push({
+        label: getCoreTranslation('district' as CoreTranslationKey, 'District'),
+        value: address.district,
+      });
+    }
+
+    const address2 = address.extension?.[0]?.extension?.find((add) => getAddressKey(add.url) === 'address2');
+    if (address2?.valueString) {
+      parts.push({
+        label: getCoreTranslation(getAddressKey(address2.url) as CoreTranslationKey, 'Township'),
+        value: address2.valueString,
+      });
+    }
+
+    const address3 = address.extension?.[0]?.extension?.find((add) => getAddressKey(add.url) === 'address3');
+    if (address3?.valueString) {
+      parts.push({
+        label: getCoreTranslation(getAddressKey(address3.url) as CoreTranslationKey, 'Fokontany'),
+        value: address3.valueString,
+      });
+    }
+
+    return parts;
+  };
+
+  const addressParts = getAddressParts();
+
   return (
     <>
       <p className={styles.heading}>{getCoreTranslation('address', 'Address')}</p>
       <ul>
-        {address ? (
-          Object.entries(address)
-            .filter(([key]) => key !== 'id' && key !== 'use')
-            .map(([key, value]) =>
-              key === 'extension' ? (
-                address.extension?.[0]?.extension?.map((add, i) => (
-                  <li key={`address-${key}-${i}`}>
-                    {getCoreTranslation(
-                      getAddressKey(add.url) as CoreTranslationKey,
-                      getAddressKey(add.url) as CoreTranslationKey,
-                    )}
-                    : {add.valueString}
-                  </li>
-                ))
-              ) : (
-                <li key={`address-${key}`}>
-                  {getCoreTranslation(key as CoreTranslationKey, key)}: {value}
-                </li>
-              ),
-            )
+        {addressParts.length > 0 ? (
+          addressParts.map((part, index) => (
+            <li key={`address-part-${index}`}>
+              {part.label}: {part.value}
+            </li>
+          ))
         ) : (
           <li>--</li>
         )}
