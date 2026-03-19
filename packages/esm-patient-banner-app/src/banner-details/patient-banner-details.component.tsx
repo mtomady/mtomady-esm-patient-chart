@@ -59,6 +59,14 @@ const Address: React.FC<{ patientId: string }> = ({ patientId }) => {
       });
     }
 
+    const address4 = address.extension?.[0]?.extension?.find((add) => getAddressKey(add.url) === 'address4');
+    if (address4?.valueString) {
+      parts.push({
+        label: getCoreTranslation(getAddressKey(address4.url) as CoreTranslationKey, 'Adresse'),
+        value: address4.valueString,
+      });
+    }
+
     return parts;
   };
 
